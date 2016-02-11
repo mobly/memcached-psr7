@@ -9,7 +9,7 @@
   },
   "require": {
     "php": ">=5.4",
-    "mobly/adapter-psr7": "v0.1"
+    "mobly/adapter-psr7": "@dev"
   },
   "license": "proprietary",
   "authors": [
@@ -18,5 +18,5 @@
       "email": "dev@mobly.com.br"
     }
   ],
-  "minimum-stability": "stable"
+  "minimum-stability": "dev"
 }

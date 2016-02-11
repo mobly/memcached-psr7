@@ -106,6 +106,24 @@ class MemcachedAdapter extends AbstractCacheAdapter
     }
 
     /**
+     * @param array $keys
+     * @return array
+     */
+    protected function fetchMultiObjectsFromCache(array $keys)
+    {
+        $items = [];
+        $result = $this->cache->getMulti($keys, $null, \Memcached::GET_PRESERVE_ORDER);
+
+        foreach ($result as $key => $value) {
+            $cacheItem = new CacheItem($key);
+            $cacheItem->set(unserialize($value));
+            $items[$key] = $cacheItem;
+        }
+
+        return $items;
+    }
+
+    /**
      * @return bool
      */
     protected function clearAllObjectsFromCache()

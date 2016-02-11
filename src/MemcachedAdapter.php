@@ -1,6 +1,6 @@
 <?php
 
-namespace Mobly\Cache\Adapter;
+namespace Mobly\Cache\Adapter\Memcached;
 
 use Mobly\Cache\AbstractCacheAdapter;
 use Mobly\Cache\CacheAdapterConfiguration;

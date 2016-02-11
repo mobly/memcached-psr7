@@ -1,0 +1,147 @@
+<?php
+
+namespace Mobly\Cache\Adapter;
+
+use Mobly\Cache\AbstractCacheAdapter;
+use Mobly\Cache\CacheAdapterConfiguration;
+use Mobly\Cache\CacheItem;
+use Mobly\Cache\Exception\CacheException;
+use Psr\Cache\CacheItemInterface;
+
+class MemcachedAdapter extends AbstractCacheAdapter
+{
+
+    /**
+     * @var \Memcached
+     */
+    private $cache;
+
+    /**
+     * @var CacheAdapterConfiguration
+     */
+    private $configuration;
+
+    /**
+     * @var self The reference to *Singleton* instance of this class
+     */
+    private static $instance;
+
+    /**
+     * @param CacheAdapterConfiguration $configuration
+     */
+    protected function __construct(CacheAdapterConfiguration $configuration)
+    {
+        $this->configuration = $configuration;
+
+        $this->cache = new \Memcached();
+        $serverList = $this->cache->getServerList();
+        if(empty($serverList)) {
+            $this->cache->addServer($this->configuration->getHost(), $this->configuration->getPort());
+        }
+
+        $this->cache->setOption(\Memcached::OPT_BINARY_PROTOCOL, true);
+
+        $this->checkConnection();
+    }
+
+    /**
+     * Private clone method to prevent cloning of the instance of the
+     * *Singleton* instance.
+     *
+     * @return void
+     */
+    private function __clone()
+    {
+    }
+
+    /**
+     * @param CacheAdapterConfiguration $configuration
+     * @return MemcachedAdapter
+     */
+    public static function getInstance(CacheAdapterConfiguration $configuration)
+    {
+        if (null === static::$instance) {
+            static::$instance = new static($configuration);
+        }
+
+        return static::$instance;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function checkConnection()
+    {
+        $stats = $this->cache->getStats();
+        $result = (isset($stats[$this->configuration->getHost().":".$this->configuration->getPort()]));
+        if (!$result) {
+            throw new CacheException('Connection error!');
+        }
+
+        return true;
+    }
+
+    /**
+     * @param CacheAdapterConfiguration $configuration
+     */
+    public function setConfiguration(CacheAdapterConfiguration $configuration)
+    {
+        $this->configuration = $configuration;
+    }
+
+    /**
+     * @param string $key
+     * @return CacheItemInterface
+     */
+    protected function fetchObjectFromCache($key)
+    {
+        $cacheItem = new CacheItem($key);
+        if (false === $result = unserialize($this->cache->get($key))) {
+            return $cacheItem;
+        }
+
+        $cacheItem->set($result);
+
+        return $cacheItem;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function clearAllObjectsFromCache()
+    {
+        return $this->cache->flush();
+    }
+
+    /**
+     * @param string $key
+     * @return bool
+     */
+    protected function clearOneObjectFromCache($key)
+    {
+        $this->commit();
+
+        if ($this->cache->delete($key)) {
+            return true;
+        }
+
+        // Return true if key not found
+        return $this->cache->getResultCode() === \Memcached::RES_NOTFOUND;
+    }
+
+    /**
+     * @param string $key
+     * @param CacheItemInterface $item
+     * @param int|null $ttl
+     * @return bool
+     */
+    protected function storeItemInCache($key, CacheItemInterface $item, $ttl)
+    {
+        if ($ttl === null) {
+            $ttl = $this->configuration->getTimeToLive();
+        }
+
+        return $this->cache->set($key, serialize($item->get()), $ttl);
+    }
+
+}

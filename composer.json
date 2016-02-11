@@ -1,0 +1,22 @@
+{
+  "name": "mobly/memcached-psr7",
+  "description": "Memcached PSR-7 Adapter",
+  "type": "library",
+  "autoload": {
+    "psr-4": {
+      "Mobly\\Cache\\Adapter\\": "src"
+    }
+  },
+  "require": {
+    "php": ">=5.4",
+    "mobly/adapter-psr7": "v0.1"
+  },
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Mobly Developers",
+      "email": "dev@mobly.com.br"
+    }
+  ],
+  "minimum-stability": "stable"
+}

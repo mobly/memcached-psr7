@@ -116,10 +116,12 @@ class MemcachedAdapter extends AbstractCacheAdapter
 
         foreach ($result as $key => $value) {
             $cacheItem = new CacheItem($key);
-            $cacheItem->set(unserialize($value));
+            if (false !== $result = unserialize($this->cache->get($key))) {
+                $cacheItem->set($result);
+            }
+
             $items[$key] = $cacheItem;
         }
-
         return $items;
     }
 

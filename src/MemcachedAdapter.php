@@ -3,7 +3,7 @@
 namespace Mobly\Cache\Adapter\Memcached;
 
 use Mobly\Cache\AbstractCacheAdapter;
-use Mobly\Cache\CacheAdapterConfiguration;
+use Mobly\Cache\Interfaces\ConfigurationInterface;
 use Mobly\Cache\CacheItem;
 use Mobly\Cache\Exception\CacheException;
 use Psr\Cache\CacheItemInterface;
@@ -27,9 +27,9 @@ class MemcachedAdapter extends AbstractCacheAdapter
     private static $instance;
 
     /**
-     * @param CacheAdapterConfiguration $configuration
+     * @param ConfigurationInterface $configuration
      */
-    protected function __construct(CacheAdapterConfiguration $configuration)
+    protected function __construct(ConfigurationInterface $configuration)
     {
         $this->configuration = $configuration;
 
@@ -55,10 +55,10 @@ class MemcachedAdapter extends AbstractCacheAdapter
     }
 
     /**
-     * @param CacheAdapterConfiguration $configuration
+     * @param ConfigurationInterface $configuration
      * @return MemcachedAdapter
      */
-    public static function getInstance(CacheAdapterConfiguration $configuration)
+    public static function getInstance(ConfigurationInterface $configuration)
     {
         if (null === static::$instance) {
             static::$instance = new static($configuration);
@@ -82,9 +82,9 @@ class MemcachedAdapter extends AbstractCacheAdapter
     }
 
     /**
-     * @param CacheAdapterConfiguration $configuration
+     * @param ConfigurationInterface $configuration
      */
-    public function setConfiguration(CacheAdapterConfiguration $configuration)
+    public function setConfiguration(ConfigurationInterface $configuration)
     {
         $this->configuration = $configuration;
     }

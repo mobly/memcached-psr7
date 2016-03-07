@@ -9,7 +9,7 @@
   },
   "require": {
     "php": ">=5.4",
-    "mobly/adapter-psr7": "@dev"
+    "mobly/adapter-psr7": "~1.0"
   },
   "license": "proprietary",
   "authors": [

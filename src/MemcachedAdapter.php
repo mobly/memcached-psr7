@@ -41,7 +41,9 @@ class MemcachedAdapter extends AbstractCacheAdapter
 
         $this->cache->setOption(\Memcached::OPT_BINARY_PROTOCOL, true);
 
-        $this->checkConnection();
+        if ($this->configuration->shouldCheckConnection()) {
+            $this->checkConnection();
+        }
     }
 
     /**

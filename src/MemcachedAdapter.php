@@ -114,7 +114,13 @@ class MemcachedAdapter extends AbstractCacheAdapter
     protected function fetchMultiObjectsFromCache(array $keys)
     {
         $items = [];
-        $result = $this->cache->getMulti($keys, $null, \Memcached::GET_PRESERVE_ORDER);
+        $null = null;
+
+        if (PHP_MAJOR_VERSION >= 7) {
+            $result = $this->cache->getMulti($keys, \Memcached::GET_PRESERVE_ORDER);
+        } else {
+            $result = $this->cache->getMulti($keys, $null, \Memcached::GET_PRESERVE_ORDER);
+        }
 
         foreach ($result as $key => $value) {
             $cacheItem = new CacheItem($key);
